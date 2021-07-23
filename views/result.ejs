@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Correct Brand?</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+     
+        <% if(locals.count > 0) { %>
+            <img src='<%= img%>' alt='<%=brand%>'> 
+            <h1><%=brand%> Logo Found</h1>
+        <% }else { %>
+            <img src='<%= img%>' alt='Not <%=brand%>'> 
+            <h1><%=brand%> Log Not Fount</h1>
+        <% } %>
+ 
+    <form action="/" enctype="multipart/form-data" method="post">
+        <input type="text" name="brand" id="brand" placeholder="brand"> 
+        <input type="file" name="file-to-upload">
+        <input type="submit" value="Upload">
+    </form>  
+  </body>
+</html>
