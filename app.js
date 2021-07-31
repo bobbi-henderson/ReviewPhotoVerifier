@@ -56,7 +56,7 @@ app.get("/", (req, res) => {
 
 app.post("/", upload.single("file-to-upload"), async (req, res) => {
   try {
-    let hotDogCount = 0;
+    let objectCount = 0;
     // Upload image to cloudinary
     const result = await cloudinary.uploader.upload(req.file.path);
     const objectURL = result.secure_url;
@@ -77,8 +77,8 @@ app.post("/", upload.single("file-to-upload"), async (req, res) => {
         `${objects.length} object${objects.length == 1 ? "" : "s"} found:`
       );
       for (const obj of objects) {
-        if (obj.object.toLowerCase() === req.body.brand.toLowerCase()) {
-          logoCount = logoCount + 1;
+        if (obj.object === "") {
+          objectCount = objectCount + 1;
         }
         console.log(
           `    ${obj.object} (${obj.confidence.toFixed(
@@ -100,7 +100,7 @@ app.post("/", upload.single("file-to-upload"), async (req, res) => {
       );
     }
 
-    res.render("result.ejs", { count: logoCount, img: objectURL, brand: req.body.brand });
+    res.render("result.ejs", { count: objectCount, img: objectURL });
   } catch (err) {
     console.log(err);
   }
