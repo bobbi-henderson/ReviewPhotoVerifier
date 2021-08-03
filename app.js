@@ -57,19 +57,46 @@ app.get("/", (req, res) => {
 app.post("/", upload.single("file-to-upload"), async (req, res) => {
   try {
     let objectCount = 0;
+    let brandFound = false;
+    let brandConfidence = 0;
     // Upload image to cloudinary
     const result = await cloudinary.uploader.upload(req.file.path);
-    const objectURL = result.secure_url;
+    const imageUrl = result.secure_url;
 
     // Analyze a URL image
-    console.log("Analyzing objects in image...", objectURL.split("/").pop());
+    console.log("Analyzing objects in image...", imageUrl.split("/").pop());
 
     const objects = (
-      await computerVisionClient.analyzeImage(objectURL, {
+      await computerVisionClient.analyzeImage(imageUrl, {
         visualFeatures: ["Objects"],
       })
     ).objects;
     console.log();
+
+    const brands = (
+      await computerVisionClient.analyzeImage(imageUrl, {
+        visualFeatures: ["Brands"],
+      })
+    ).brands;
+
+    // Print the brands found
+    if (brands.length) {
+      console.log(
+        `${brands.length} brand${brands.length != 1 ? "s" : ""} found:`
+      );
+      for (const brand of brands) {
+        console.log(
+          `    ${brand.name} (${brand.confidence.toFixed(2)} confidence)`
+        );
+        if(brand.name.toLowerCase() == req.body.brand.toLowerCase()){
+          brandFound = true
+          brandConfidence = brand.confidence.toFixed(2)*100
+          console.log(brandFound, `${brand.name} matches user inputed brand, ${req.body.brand}, with ${brandConfidence}% confidence`)
+        }
+      }
+    } else {
+      console.log(`No brands found.`);
+    }
 
     // Print objects bounding box and confidence
     if (objects.length) {
@@ -77,7 +104,7 @@ app.post("/", upload.single("file-to-upload"), async (req, res) => {
         `${objects.length} object${objects.length == 1 ? "" : "s"} found:`
       );
       for (const obj of objects) {
-        if (obj.object === "") {
+        if (obj.object.toLowerCase() === req.body.item.toLowerCase()) {
           objectCount = objectCount + 1;
         }
         console.log(
@@ -100,7 +127,7 @@ app.post("/", upload.single("file-to-upload"), async (req, res) => {
       );
     }
 
-    res.render("result.ejs", { count: objectCount, img: objectURL });
+    res.render("result.ejs", { count: objectCount, item: req.body.item, img: imageUrl, brands: brands, brand: req.body.brand, brandFound: brandFound, brandConfidence: brandConfidence });
   } catch (err) {
     console.log(err);
   }

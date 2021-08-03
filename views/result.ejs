@@ -11,13 +11,24 @@
      <div class="container">
        <div class="row">
          <div class="col">
-            <% if(locals.count > 0) { %>
-                <img src='<%= img%>' alt='' class="mt-3 img-fluid rounded"> 
-                <h1 class="my-3"></h1>
-            <% }else { %>
-                <img src='<%= img%>' alt='' class="mt-3 img-fluid rounded"> 
-                <h1 class="my-3"></h1>
+            <%if(item){%>
+              <% if(locals.count > 0) { %>
+                  <img src='<%= img%>' alt='' class="mt-3 img-fluid rounded"> 
+                  <h1 class="my-3">Item: <%=item%> <br> Detected</h1>
+              <% }else { %>
+                  <img src='<%= img%>' alt='' class="mt-3 img-fluid rounded"> 
+                  <h1 class="my-3">No <%=item%> Detected</h1>
+              <% } %>
             <% } %>
+            <%if(brand){%>
+              <% if(brandFound) { %>
+                  <img src='<%= img%>' alt='' class="mt-3 img-fluid rounded"> 
+                  <h1 class="my-3">Brand: <%=brand%> <br> Detected with <%=brandConfidence%>% confidence</h1>
+              <% }else { %>
+                  <img src='<%= img%>' alt='' class="mt-3 img-fluid rounded"> 
+                  <h1 class="my-3"><%=brand%> Not Detected</h1>
+              <% } %>
+            <%}%>
          </div>
        </div>
      </div>
@@ -26,7 +37,15 @@
         <div class="row">
           <div class="col">
             <form action="/" enctype="multipart/form-data" method="post">
-              <div class="mb-3 px-5 py-3">
+              <div class="mb-3 pt-3 px-5">
+                <label for="item" class="form-label">Item You Are Looking For</label>
+                <input type="text" name="item" id="item" class="form-control">
+              </div>
+              <div class="mb-3 px-5">
+                <label for="brand" class="form-label">Brand You Are Looking For</label>
+                <input type="text" name="brand" id="brand" class="form-control">
+              </div>
+              <div class="mb-3 pb-3 px-5">
                 <label for="image" class="form-label">Image</label>
                 <input type="file" name="file-to-upload" id="image" class="form-control">
               </div>
