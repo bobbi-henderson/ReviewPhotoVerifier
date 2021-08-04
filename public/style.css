@@ -2,7 +2,22 @@ img{
     width: 500px;
 }
 
-form {
+form, .resultImage, .results, .greeting {
     border-radius: 10px;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.resultImage, .results, .greeting {
+    background-color: #25D3A4;
+    color: white;
+}
+
+
+.btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited {
+    background-color: #25D3A4 !important;
+    border-color: #25D3A4 !important;
+}
+
+.row {
+    --bs-gutter-x: 0rem !important;
 }

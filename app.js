@@ -56,7 +56,8 @@ app.get("/", (req, res) => {
 
 app.post("/", upload.single("file-to-upload"), async (req, res) => {
   try {
-    let objectCount = 0;
+    let itemFound = false;
+    let itemConfidence = 0;
     let brandFound = false;
     let brandConfidence = 0;
     // Upload image to cloudinary
@@ -88,9 +89,11 @@ app.post("/", upload.single("file-to-upload"), async (req, res) => {
         console.log(
           `    ${brand.name} (${brand.confidence.toFixed(2)} confidence)`
         );
-        if(brand.name.toLowerCase() == req.body.brand.toLowerCase()){
+        if(brand.name.toLowerCase() == req.body.brand.toLowerCase() || brand.name.toLowerCase() == req.body.brand.toLowerCase()+'s'){
           brandFound = true
-          brandConfidence = brand.confidence.toFixed(2)*100
+          if(brand.confidence.toFixed(2)*100 > brandConfidence){
+            brandConfidence = brand.confidence.toFixed(2)*100
+          }
           console.log(brandFound, `${brand.name} matches user inputed brand, ${req.body.brand}, with ${brandConfidence}% confidence`)
         }
       }
@@ -103,14 +106,18 @@ app.post("/", upload.single("file-to-upload"), async (req, res) => {
       console.log(
         `${objects.length} object${objects.length == 1 ? "" : "s"} found:`
       );
-      for (const obj of objects) {
-        if (obj.object.toLowerCase() === req.body.item.toLowerCase()) {
-          objectCount = objectCount + 1;
+      for (const item of objects) {
+        if (item.object.toLowerCase() === req.body.item.toLowerCase() || item.object.toLowerCase() === req.body.item.toLowerCase()+'s') {
+          itemFound = true
+          if(item.confidence.toFixed(2)*100 > itemConfidence){
+            itemConfidence = item.confidence.toFixed(2)*100
+          }
+          console.log(itemFound, `${item.object} matches user inputed item, ${req.body.item}, with ${itemConfidence}% confidence`)
         }
         console.log(
-          `    ${obj.object} (${obj.confidence.toFixed(
+          `    ${item.object} (${item.confidence.toFixed(
             2
-          )}) at ${formatRectObjects(obj.rectangle)}`
+          )}) at ${formatRectObjects(item.rectangle)}`
         );
       }
     } else {
@@ -127,7 +134,7 @@ app.post("/", upload.single("file-to-upload"), async (req, res) => {
       );
     }
 
-    res.render("result.ejs", { count: objectCount, item: req.body.item, img: imageUrl, brands: brands, brand: req.body.brand, brandFound: brandFound, brandConfidence: brandConfidence });
+    res.render("result.ejs", { itemFound: itemFound, itemConfidence: itemConfidence, item: req.body.item, img: imageUrl, brands: brands, brand: req.body.brand, brandFound: brandFound, brandConfidence: brandConfidence });
   } catch (err) {
     console.log(err);
   }
